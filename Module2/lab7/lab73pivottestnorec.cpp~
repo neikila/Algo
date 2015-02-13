@@ -1,0 +1,162 @@
+/*
+Выполнил: Нейман К. А.
+Группа: АПО-12
+*/
+
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#define STEP 10000
+#define SIZE 20
+
+void Swap (int *a, int *b)
+{
+	static int temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+int stop  = 0;
+
+//Разбиение на две части
+int Partition(int* arr, int First, int Last)
+{
+	int Index = rand() % ( Last - First + 1 ) + First;
+	int pivot = arr[Index];
+	Swap(&arr[Index], &arr[Last]);
+	int i = First + 1;
+	int j = Last;
+	while ( true )
+	{
+		while( i <= Last && arr[i] < pivot )
+			i++;
+		while( arr[j] > pivot )
+			j--;
+		if( i >= j ) {
+			Swap(&arr[First], &arr[j]);
+			return j;
+		}
+		Swap(&arr[i], &arr[j]);
+		i++;
+		j--;
+	}
+}
+
+
+void QSort(int* arr, int First, int Last) 
+{
+	int pivotpos;
+	int* FirstM = NULL, *LastM = NULL;
+	int Size = 8;
+	FirstM = (int*)realloc(FirstM, Size * sizeof(int) ) ;
+	LastM = (int*)realloc(LastM, Size * sizeof(int) ) ;
+	int Count = 0, Index = -1;
+	FirstM[Count] = First;
+	LastM[Count] = Last;
+	++Count;
+	while(++Index < Count)
+	{
+		if (Size == Count)
+		{
+			Size *= 2;
+			FirstM = (int*)realloc(FirstM, Size * sizeof(int) ) ;
+			LastM = (int*)realloc(LastM, Size * sizeof(int) ) ;
+		}
+		pivotpos = Partition(arr, FirstM[Index], LastM[Index]);
+		if (FirstM[Index] + STEP < pivotpos - 1)
+		{
+			FirstM[Count] = FirstM[Index];
+			LastM[Count] = pivotpos - 1;
+			++Count;
+		}
+		if (LastM[Index] > pivotpos + 1 + STEP)
+		{
+			FirstM[Count] = pivotpos + 1;
+			LastM[Count] = LastM[Index];
+			++Count;
+		}
+	}
+	return;
+}
+
+inline int read_int()
+{
+	static char c;
+	static int res;
+	while ( (c = getchar()) == ' ' );
+	res = c - '0';
+	while ( (c = getchar()) >= '0' && c <= '9')
+	{
+		res = res * 10 + (c - '0');
+	}
+	if (c == EOF)
+		stop = 1;
+	return res;
+}
+
+int increment( int **inc, long size) {
+	int p1, p2, p3, s;
+	*inc = new int [SIZE];
+	p1 = p2 = p3 = 1;
+	s = -1;
+	do {
+		if (++s % 2) {
+			(*inc)[s] = 8*p1 - 6*p2 + 1;
+		} else {
+			(*inc)[s] = 9*p1 - 9*p3 + 1;
+			p2 *= 2;
+			p3 *= 2;
+		}
+		p1 *= 2;
+	} while(STEP * (*inc)[s] < size);
+
+	return s > 0 ? --s : 0;
+}
+
+void ShellSort(int* a, long size) 
+{
+	int inc, i, j, *seq;
+	int s;
+	s = increment(&seq, size);
+	while (s >= 0) {
+		inc = seq[s--];
+		for (i = inc; i < size; i++) {
+			int temp = a[i];
+			for (j = i-inc; (j >= 0) && (a[j] > temp); j -= inc)
+				a[j+inc] = a[j];
+			a[j+inc] = temp;
+		}
+	}
+	delete[] seq;
+}
+int main() 
+{
+	srand(time(NULL));
+	int Size = 100;
+	int* arr = new int[Size];
+	int i = 0;
+	do
+	{
+		if ( i != Size )
+		{			
+		}
+		else
+		{
+			Size *= 2;
+			arr = (int*)realloc(arr, Size * sizeof(int) ) ;
+		}
+		arr[i++] = read_int();
+	}
+	while( stop == 0 );
+	Size = i - 1;
+	QSort(arr, 0, Size - 1);
+	ShellSort(arr, Size);
+	for( int i = 9; i < Size; i += 10 ) 
+	{
+			printf("%d\n", arr[i]);
+	}
+	delete [] arr;
+	return 0;
+}

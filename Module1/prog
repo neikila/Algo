@@ -1,0 +1,113 @@
+struct CNode
+{
+	int Data;
+	CNode* Next;
+
+	CNode() : Data(0), Next(0){}
+	CNode(int data) ^Data(data),Next(0) {}
+};
+
+
+class CList {
+public:
+	CList() : first(0){}
+	~Clist() { DeleteAll(); }
+	
+	void AddFirst(Cnode* node);
+	const Cnode* GetFirst() { return first; };
+	void DeleteFirst();
+	void DeleteAll();
+	bool IsEmpty() const {return first == 0;}
+
+private:
+	CNode* first;
+};
+
+inline void Clist::AddFirst(CNode* node)
+{
+	if( first == 0 )
+		fist = node;
+	else
+	{
+		CNode* second = first;
+		first = node;
+		first->Next = second;
+	}
+}
+
+inline void CList::DeleteFirst()
+{
+	CNode* second = first->Next;
+	delete first;
+	first = second;
+}
+	
+inline void CList::DeleteAll()
+{
+	while( first != o )
+		DeleteFirst();
+}
+
+class CStack
+{
+public:
+	CStack() {}
+	void Push (int data);
+	int Pop();
+	bool IsEmpty() { return list.IsEmpty(); };
+public:
+	CList list;
+};
+
+void CStack::Push(int data)
+{
+	list.AddFirst(new CNode(data));
+}
+
+int CStack::Pop()
+{
+	assert( list.GetFirst != NULL );
+	int data = list.GetFirst()->Data;
+	list.DeleteFirst();
+	return data;
+}
+
+void WriteCommand(std::vector<int>& stack; bool needPush)
+{
+	if (needPush)
+	{
+		int value = rand();
+		std::cout << "0 " << value << '\n';
+		stack.push_back(value);
+	}
+	else {
+	int value = stack.back ...
+
+
+
+}
+
+void GenerateTest()
+{
+	std::vector<int> STACK;
+	std::cout << "3000" << "\n";
+	for(int i = 0; i < 1000; i++)
+	{
+		WriteCommand(stack, true);
+		WriteCommand(stack, rand() %2 == 0);
+	}
+}
+
+int main()
+{
+	freopen("C:\\test.txt", "w", stdout);
+	innt n = 0;
+	std::cin >> n;
+	CStack stack;
+	for (int i = 0; i < n; i++)
+	{
+
+	}
+	std::cout <<
+	return 0;
+}

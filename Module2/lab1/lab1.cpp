@@ -1,0 +1,156 @@
+/*
+Выполнил: Нейман К. А. (k.neiman)
+Группа: АПО-12
+1_1. Сортировка выбором.
+1_2. Сортировка вставками.
+1_3. Сортировка пузырьком.
+
+in
+3
+1
+2
+out
+1
+2
+3
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include "time.h"
+using namespace std;
+
+///Массив данны с динамическим выделением памяти
+template < typename T >
+class CArray
+{
+private:
+    T* Mas;
+    size_t Size;
+    size_t RealSize;
+    void Grow();
+public:
+    void PushBack ( T );                                //Добавление элемента
+    T operator [] (int Index) { return Mas[Index]; };   //Получение i-ого элемента
+    void SortBubble ();                                 //Сортировка пузырьком
+    void SortInsert ();                                 //Сортировка вставками
+    void SortSelect ();                                 //Сортировка выбором
+    size_t GetSize() { return RealSize; };              //Получение количества элементов
+    CArray () : Mas( NULL ), Size(1), RealSize(0) { Mas = new T[1]; };
+    ~CArray () { delete[] Mas; };
+};
+
+template < typename T >
+void CArray < T >::Grow()
+{
+	T* Temp = NULL;
+	size_t i;
+	size_t TempSize = 2 * Size;
+	Temp = new T [TempSize];
+	for (i = 0; i < Size; ++i)
+		Temp[i] = Mas[i];
+	delete[] Mas;
+	Mas = Temp;
+	Size = TempSize;
+}
+
+template < typename T >
+void CArray < T >::PushBack( T a )
+{
+	if ( RealSize == Size )
+	{
+		Grow();
+	}
+    Mas[RealSize++] = a;
+}
+
+template < typename T >
+void CArray < T >::SortBubble()
+{
+    size_t i, j;
+    for ( i = 0; i < RealSize; ++i )
+    {
+        for ( j = RealSize - 1; j > i; --j )
+        {
+            if ( Mas[j] < Mas[j - 1] )
+            {
+                std::swap(Mas[j - 1], Mas[j]);
+            }
+        }
+    }
+}
+
+
+template < typename T >
+void CArray < T >::SortInsert()
+{
+    size_t i, j;
+    T tmp;
+    for ( i = 1; i < RealSize; ++i )
+    {
+        tmp = Mas[i];
+        for ( j = i; j > 0 && tmp < Mas[j - 1]; --j)
+        {
+            Mas[j] = Mas[j - 1];
+        }
+        Mas[j] = tmp;
+    }
+}
+
+
+template < typename T >
+void CArray < T >::SortSelect()
+{
+    size_t i, j, IndexMin;
+    for ( i = 0; i < RealSize - 1; ++i )
+    {
+        IndexMin = i;
+        for ( j = i + 1; j < RealSize; ++j )
+        {
+            if ( Mas[IndexMin] > Mas[j] )
+            {
+                IndexMin = j;
+            }
+        }
+        std::swap( Mas[i], Mas[IndexMin] );
+    }
+}
+
+template < typename T >
+CArray < T >* Input()
+{
+    T a;
+    CArray < T > *Mas = new CArray < T >;
+    cin.clear();
+    while ( cin >> a, cin.good() )
+    {
+        Mas->PushBack( a );
+    }
+    return Mas;
+}
+
+template < typename T >
+void Print ( CArray < T > *Mas )
+{
+    size_t Size = Mas->GetSize();
+    for ( int i = 0; i < Size; ++i )
+    {
+        cout << (*Mas)[i];
+        cout << endl;
+    }
+}
+
+int main ()
+{
+    //clock_t Start, Finish;
+    //Start = clock();
+    CArray < int > *IntMas = Input < int > ();
+    IntMas->SortBubble();
+    Print( IntMas );
+    //Finish = clock();
+    //cout << "Diff Time = " << difftime( Finish, Start ) << endl;
+    delete IntMas;
+    return 0;
+}

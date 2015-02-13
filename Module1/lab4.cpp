@@ -1,0 +1,152 @@
+/*
+Выполнил: Нейман Кирилл Аркадьевич. (k.neiman)
+Группа: АПО-12
+
+В первой строке количество команд.
+Каждая команда задаётся как 2 целых числа: a b.
+a = 1 - push front
+a = 2 - pop front
+a = 3 - push back
+a = 4 - pop back
+Для очереди используются команды 2 и 3.
+Если дана команда pop*, то число b - ожидаемое значение. Если команда pop вызвана для пустой структуры данных, то ожидается “-1”.
+Формат выходных данных.
+Требуется напечатать YES - если все ожидаемые значения совпали. Иначе, если хотя бы одно ожидание не оправдалось, то напечатать NO.
+
+4_1. Реализовать очередь с динамическим буфером.
+in
+3
+3 44
+3 50
+2 44
+out
+YES
+in
+2
+2 -1
+3 10
+out
+YES
+in
+2
+3 44
+2 66
+out
+NO
+*/
+
+#include <iostream>
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+// Очередь целых чисел, реализованная с помощью массива.
+
+class CQueue 
+{
+public:
+	CQueue();
+	~CQueue() { delete[] buffer; }
+	// Добавление и извлечение элемента из очереди.
+	void PushBack( int a );
+	int PopFront();
+	// Проверка на пустоту.
+	bool IsEmpty() const { return realsize == 0; }
+private:
+	int* buffer;	//Массив
+	int bufferSize;	//Размер массива
+	int realsize;	//Количество "значащих" элементов (не мусора)
+	int head; // Указывает на первый элемент очереди.
+	int tail; // Указывает на следующий после последнего.
+	void Grow();
+};
+
+
+CQueue::CQueue():
+	bufferSize(1), head(0), tail(0), realsize(0)
+{
+	buffer = new int[bufferSize]; // Создаем буфер.
+}
+
+// Добавление элемента.
+void CQueue::PushBack(int a)
+{
+	if (realsize == bufferSize)
+	{
+		Grow();
+	}
+	buffer[tail++] = a;
+	realsize++;
+	if( tail == bufferSize )
+		tail = 0;
+}
+
+// Извлечение элемента.
+int CQueue::PopFront()
+{
+	int result = -1;
+	if( !IsEmpty() )
+	{
+		result = buffer[head++];
+		realsize--;
+		if( head == bufferSize )
+			head = 0;
+	}
+	return result;
+}
+
+//Увеличение размера массива
+void CQueue::Grow()
+{
+	int* temp = NULL;
+	int i;
+	int tempsize = 2*bufferSize; 
+	temp = new int [tempsize];
+	for (i = head; i - head != realsize; ++i)
+		temp[i] = buffer[i % bufferSize];
+	delete[] buffer;
+	buffer = temp;
+	bufferSize = tempsize;
+	tail = i;
+}
+
+int analyzer(int NumberOfCommands, CQueue* IntBuf)
+{
+	//Получение комманды и её обработка
+	int temp = 0;
+	int CommandIndex = 0, Data = 0;
+	int result = 0;
+	while( NumberOfCommands-- > 0 )
+	{
+		//Получение
+		assert( scanf("%d %d", &CommandIndex, &Data) == 2 );
+		assert( CommandIndex > 1 && CommandIndex < 4 );
+		if ( CommandIndex == 2 )
+		{
+			if( (temp = IntBuf->PopFront()) != Data )
+			{
+				result = 1;
+				break;
+			}
+		}
+		else
+			IntBuf->PushBack(Data);
+	}
+	return result;
+}
+
+
+int main()
+{
+	//Получение количества комманд
+	int NumberOfCommands = 0;
+	if( scanf("%d\n", &NumberOfCommands) == 1 )
+	{
+		assert( NumberOfCommands >= 0 );
+		//Создание динамического буфера
+		CQueue IntBuf;
+		const char* ResultMes[2] = {"YES\n", "NO\n"};
+		printf("%s", ResultMes[analyzer(NumberOfCommands, &IntBuf)]);
+	}
+	return 0;
+}
